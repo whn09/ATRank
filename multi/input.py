@@ -74,3 +74,5 @@ class DataInput:
                 hist_q_id, hist_q_time, q_sl, \
                 hist_c_id, hist_c_time, c_sl)
 
+    def next(self):  # for python2
+        return self.__next__()

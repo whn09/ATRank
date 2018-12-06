@@ -43,7 +43,7 @@ with tf.Session(
 
     epoch += 1
     print('epoch: %d\ttrain_loss: %.2f\tlr: %.2f' %
-          (epoch, loss_sum / epoch_size, lr), end='\t')
+          (epoch, loss_sum / epoch_size, lr))
 
     test_auc = model.eval(sess, test_set)
     print('test_auc: %.4f' % test_auc)

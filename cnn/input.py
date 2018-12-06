@@ -39,6 +39,9 @@ class DataInput:
       k += 1
     return self.i, (u, i, y, hist_i, hist_t, sl)
 
+  def next(self):  # for python2
+    return self.__next__()
+
 class DataInputTest:
   def __init__(self, data, batch_size):
     self.batch_size = batch_size
@@ -77,3 +80,6 @@ class DataInputTest:
         hist_t[k][l] = t[2][l]
       k += 1
     return self.i, (u, i, j, hist_i, hist_t, sl)
+
+  def next(self):  # for python2
+    return self.__next__()

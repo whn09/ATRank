@@ -123,7 +123,7 @@ def train():
 
   # Build Config
   config = OrderedDict(sorted(FLAGS.__flags.items()))
-  for k, v in config.items():  # for python2?
+  for k, v in config.items():  # for python2
     config[k] = v.value
   config['user_count'] = user_count
   config['item_count'] = item_count

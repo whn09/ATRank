@@ -19,3 +19,6 @@ class DataInput:
     self.i += 1
 
     return self.i, t
+
+  def next(self):  # for python2
+    return self.__next__()
