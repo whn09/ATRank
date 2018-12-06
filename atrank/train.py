@@ -51,7 +51,8 @@ FLAGS = tf.app.flags.FLAGS
 
 def create_model(sess, config, cate_list):
 
-  print(json.dumps(config, indent=4))
+  # print(json.dumps(config, indent=4))
+  print('config:', config)
   model = Model(config, cate_list)
 
   print('All global variables:')
