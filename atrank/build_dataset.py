@@ -30,13 +30,17 @@ def proc_time_emb(hist_t, cur_t):
 
 train_set = []
 test_set = []
+cnt = 0
 for reviewerID, hist in reviews_df.groupby('reviewerID'):
+    if cnt % 1000:
+        print('cnt:', cnt, '/', user_count)
+    cnt += 1
     pos_list = hist['asin'].tolist()
-    print('pos_list:', len(pos_list), pos_list[:5])
+    # print('pos_list:', len(pos_list), pos_list[:5])
     tim_list = hist['unixReviewTime'].tolist()
-    print('tim_list1:', len(tim_list), tim_list[:5])
+    # print('tim_list1:', len(tim_list), tim_list[:5])
     tim_list = [i // 3600 // 24 for i in tim_list]
-    print('tim_list2:', len(tim_list), tim_list[:5])
+    # print('tim_list2:', len(tim_list), tim_list[:5])
 
 
     def gen_neg():
@@ -47,7 +51,7 @@ for reviewerID, hist in reviews_df.groupby('reviewerID'):
 
 
     neg_list = [gen_neg() for i in range(len(pos_list))]
-    print('neg_list:', len(neg_list), neg_list[:5])
+    # print('neg_list:', len(neg_list), neg_list[:5])
 
     for i in range(1, len(pos_list)):
         hist_i = pos_list[:i]
@@ -58,6 +62,9 @@ for reviewerID, hist in reviews_df.groupby('reviewerID'):
         else:
             label = (pos_list[i], neg_list[i])
             test_set.append((reviewerID, hist_i, hist_t, label))
+
+print('train_set:', len(train_set), train_set[:5])
+print('test_set:', len(test_set), test_set[:5])
 
 random.shuffle(train_set)
 random.shuffle(test_set)
