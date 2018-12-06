@@ -52,7 +52,7 @@ FLAGS = tf.app.flags.FLAGS
 
 def create_model(sess, config, cate_list):
 
-    print(json.dumps(config, indent=4), flush=True)
+    print(json.dumps(config, indent=4))
     model = Model(config, cate_list)
 
     print('All global variables:')
@@ -64,12 +64,12 @@ def create_model(sess, config, cate_list):
 
     ckpt = tf.train.get_checkpoint_state(FLAGS.model_dir)
     if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
-        print('Reloading model parameters..', flush=True)
+        print('Reloading model parameters..')
         model.restore(sess, ckpt.model_checkpoint_path)
     else:
         if not os.path.exists(FLAGS.model_dir):
             os.makedirs(FLAGS.model_dir)
-        print('Created new model parameters..', flush=True)
+        print('Created new model parameters..')
         sess.run(tf.global_variables_initializer())
         sess.run(tf.local_variables_initializer())
 
@@ -100,7 +100,7 @@ def train():
         tf.gfile.MakeDirs(FLAGS.model_dir)
 
     # Loading data
-    print('Loading data..', flush=True)
+    print('Loading data..')
     with open('dataset.pkl', 'rb') as f:
         ai_train_set = pickle.load(f)
         ai_test_set = pickle.load(f)
@@ -157,7 +157,7 @@ def train():
         # Create a new model or reload existing checkpoint
         model = create_model(sess, config,
                 (item_feat_shop_list, item_feat_cate_list, item_feat_brand_list, coupon_feat_shop_list, coupon_feat_cate_list, coupon_feat_type_list))
-        print('Init finish.\tCost time: %.2fs' % (time.time()-start_time), flush=True)
+        print('Init finish.\tCost time: %.2fs' % (time.time()-start_time))
 
         # Eval init AUC
         best_auc = eval(sess, test_set, model)
@@ -167,7 +167,7 @@ def train():
         lr = FLAGS.learning_rate
         epoch_size = round(len(train_set) / FLAGS.train_batch_size)
         print('Training..\tmax_epochs: %d\tepoch_size: %d' %
-                (FLAGS.max_epochs, epoch_size), flush=True)
+                (FLAGS.max_epochs, epoch_size))
 
         start_time, avg_loss = time.time(), 0.0
         for _ in range(FLAGS.max_epochs):
@@ -183,8 +183,7 @@ def train():
                 if model.global_step.eval() % FLAGS.eval_freq == 0:
                     test_auc = eval(sess, test_set, model)
                     print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_AUC: %.4f' % 
-                            (model.global_epoch_step.eval(), model.global_step.eval(), avg_loss / FLAGS.eval_freq, test_auc),
-                            flush=True)
+                            (model.global_epoch_step.eval(), model.global_step.eval(), avg_loss / FLAGS.eval_freq, test_auc))
                     avg_loss = 0.0
 
                     if test_auc > 0.60 and test_auc > best_auc:
@@ -194,11 +193,11 @@ def train():
             # if model.global_epoch_step.eval() == 2:
             #     lr = 0.1
 
-            print('Epoch %d DONE\tCost time: %.2f' % (model.global_epoch_step.eval(), time.time()-start_time), flush=True)
+            print('Epoch %d DONE\tCost time: %.2f' % (model.global_epoch_step.eval(), time.time()-start_time))
             model.global_epoch_step_op.eval()
             
         print('best test_auc:', best_auc)
-        print('Finished', flush=True)
+        print('Finished')
     
 
 def train_all():
@@ -210,7 +209,7 @@ def train_all():
         tf.gfile.MakeDirs(FLAGS.model_dir)
 
     # Loading data
-    print('Loading data..', flush=True)
+    print('Loading data..')
     with open('dataset.pkl', 'rb') as f:
         ai_train_set = pickle.load(f)
         ai_test_set = pickle.load(f)
@@ -255,7 +254,7 @@ def train_all():
         # Create a new model or reload existing checkpoint
         model = create_model(sess, config,
                 (item_feat_shop_list, item_feat_cate_list, item_feat_brand_list, coupon_feat_shop_list, coupon_feat_cate_list, coupon_feat_type_list))
-        print('Init finish.\tCost time: %.2fs' % (time.time()-start_time), flush=True)
+        print('Init finish.\tCost time: %.2fs' % (time.time()-start_time))
 
         def eval_all():
             return eval(sess, ai_test_set, model, 'item_batch'),\
@@ -272,7 +271,7 @@ def train_all():
         ac_epoch_size = math.ceil(len(ac_train_set) / FLAGS.train_batch_size)
         sum_epoch_size = ai_epoch_size + aq_epoch_size + ac_epoch_size
         print('Training..\tmax_epochs: %d\tepoch_size: %d (%d %d %d)' %
-                (FLAGS.max_epochs, sum_epoch_size, ai_epoch_size, aq_epoch_size, ac_epoch_size), flush=True)
+                (FLAGS.max_epochs, sum_epoch_size, ai_epoch_size, aq_epoch_size, ac_epoch_size))
 
         start_time, avg_loss, best_auc = time.time(), 0.0, 0.0
         for _ in range(FLAGS.max_epochs):
@@ -308,8 +307,7 @@ def train_all():
                     test_auc = eval_all()
                     print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_AUC: %.4f %.4f %.4f %.4f' % 
                             (model.global_epoch_step.eval(), model.global_step.eval(), avg_loss / FLAGS.eval_freq, \
-                                    test_auc[0], test_auc[1], test_auc[2], sum(test_auc)),
-                            flush=True)
+                                    test_auc[0], test_auc[1], test_auc[2], sum(test_auc)))
                     avg_loss = 0.0
 
                     if sum(test_auc) > 2.1 and sum(test_auc) > best_auc:
@@ -319,12 +317,12 @@ def train_all():
                 # if model.global_step.eval() == 50000:
                 #     lr = 0.1
 
-            print('Epoch %d DONE\tCost time: %.2f' % (model.global_epoch_step.eval(), time.time()-start_time), flush=True)
+            print('Epoch %d DONE\tCost time: %.2f' % (model.global_epoch_step.eval(), time.time()-start_time))
             model.global_epoch_step_op.eval()
             
         model.save(sess)
         print('best test_auc:', best_auc)
-        print('Finished', flush=True)
+        print('Finished')
 
 
 def main(_):

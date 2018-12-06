@@ -46,7 +46,7 @@ with tf.Session(
           (epoch, loss_sum / epoch_size, lr), end='\t')
 
     test_auc = model.eval(sess, test_set)
-    print('test_auc: %.4f' % test_auc, flush=True)
+    print('test_auc: %.4f' % test_auc)
 
     if best_auc < test_auc:
       best_auc = test_auc

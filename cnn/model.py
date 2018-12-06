@@ -228,12 +228,12 @@ class Model(object):
     jf_name = '%s-%d.json' % (checkpoint_path, self.global_step.eval())
     with open(jf_name, 'w') as jf:
       json.dump(self.config, jf, indent=2)
-    print('model saved at %s' % save_path, flush=True)
+    print('model saved at %s' % save_path)
 
   def restore(self, sess, path):
     saver = tf.train.Saver()
     saver.restore(sess, save_path=path)
-    print('model restored from %s' % path, flush=True)
+    print('model restored from %s' % path)
 
 
 def cnn_net(h_emb,

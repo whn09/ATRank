@@ -60,15 +60,14 @@ with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
         test_auc = _eval(sess, model)
         print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_AUC: %.4f' %
               (model.global_epoch_step.eval(), model.global_step.eval(),
-               loss_sum / 1000, test_auc),
-              flush=True)
+               loss_sum / 1000, test_auc))
         loss_sum = 0.0
 
       if model.global_step.eval() == 336000:
         lr = 0.1
 
     print('Epoch %d DONE\tCost time: %.2f' %
-          (model.global_epoch_step.eval(), time.time()-start_time), flush=True)
+          (model.global_epoch_step.eval(), time.time()-start_time))
     model.global_epoch_step_op.eval()
 
   print('best test_auc:', best_auc)

@@ -50,7 +50,7 @@ tf.app.flags.DEFINE_float('per_process_gpu_memory_fraction', 0.0, 'Gpu memory us
 FLAGS = tf.app.flags.FLAGS
 
 def create_model(sess, config, cate_list):
-  print(json.dumps(config, indent=4), flush=True)
+  print(json.dumps(config, indent=4))
   model = Model(config, cate_list)
 
   print('All global variables:')
@@ -62,12 +62,12 @@ def create_model(sess, config, cate_list):
 
   ckpt = tf.train.get_checkpoint_state(FLAGS.model_dir)
   if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
-    print('Reloading model parameters..', flush=True)
+    print('Reloading model parameters..')
     model.restore(sess, ckpt.model_checkpoint_path)
   else:
     if not os.path.exists(FLAGS.model_dir):
       os.makedirs(FLAGS.model_dir)
-    print('Created new model parameters..', flush=True)
+    print('Created new model parameters..')
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
 
@@ -96,7 +96,7 @@ def train():
     tf.gfile.MakeDirs(FLAGS.model_dir)
 
   # Loading data
-  print('Loading data..', flush=True)
+  print('Loading data..')
   with open('dataset.pkl', 'rb') as f:
     train_set = pickle.load(f)
     test_set = pickle.load(f)
@@ -128,8 +128,7 @@ def train():
 
     # Create a new model or reload existing checkpoint
     model = create_model(sess, config, cate_list)
-    print('Init finish.\tCost time: %.2fs' % (time.time()-start_time),
-          flush=True)
+    print('Init finish.\tCost time: %.2fs' % (time.time()-start_time))
 
     # Eval init AUC
     print('Init AUC: %.4f' % _eval(sess, test_set, model))
@@ -138,7 +137,7 @@ def train():
     lr = FLAGS.learning_rate
     epoch_size = round(len(train_set) / FLAGS.train_batch_size)
     print('Training..\tmax_epochs: %d\tepoch_size: %d' %
-          (FLAGS.max_epochs, epoch_size), flush=True)
+          (FLAGS.max_epochs, epoch_size))
 
     start_time, avg_loss, best_auc = time.time(), 0.0, 0.0
     for _ in range(FLAGS.max_epochs):
@@ -155,8 +154,7 @@ def train():
           test_auc = _eval(sess, test_set, model)
           print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_AUC: %.4f' %
                 (model.global_epoch_step.eval(), model.global_step.eval(),
-                 avg_loss / FLAGS.eval_freq, test_auc),
-                flush=True)
+                 avg_loss / FLAGS.eval_freq, test_auc))
           avg_loss = 0.0
 
           if test_auc > 0.86 and test_auc > best_auc:
@@ -167,13 +165,12 @@ def train():
           lr = 0.1
 
       print('Epoch %d DONE\tCost time: %.2f' %
-            (model.global_epoch_step.eval(), time.time()-start_time),
-            flush=True)
+            (model.global_epoch_step.eval(), time.time()-start_time))
       model.global_epoch_step_op.eval()
 
     model.save(sess)
     print('best test_auc:', best_auc)
-    print('Finished', flush=True)
+    print('Finished')
 
 
 

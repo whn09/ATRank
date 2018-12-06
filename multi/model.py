@@ -406,12 +406,12 @@ class Model(object):
         json.dump(self.config,
                 open('%s-%d.json' % (checkpoint_path, self.global_step.eval()), 'w'),
                 indent=2)
-        print('model saved at %s' % save_path, flush=True)
+        print('model saved at %s' % save_path)
 
     def restore(self, sess, path):
         saver = tf.train.Saver()
         saver.restore(sess, save_path=path)
-        print('model restored from %s' % path, flush=True)
+        print('model restored from %s' % path)
 
 
 def attention_net(enc, enc_mask, dec, num_units, num_heads, num_blocks, dropout_rate, is_training, reuse):
