@@ -4,7 +4,7 @@ import numpy as np
 
 random.seed(1234)
 
-with open('../raw_data/remap.pkl', 'rb') as f:
+with open('../raw_data/funny_remap.pkl', 'rb') as f:
   reviews_df = pickle.load(f)
   cate_list = pickle.load(f)
   user_count, item_count, cate_count, example_count = pickle.load(f)
@@ -55,7 +55,7 @@ random.shuffle(test_set)
 assert len(test_set) == user_count
 # assert(len(test_set) + len(train_set) // 2 == reviews_df.shape[0])
 
-with open('dataset.pkl', 'wb') as f:
+with open('funny_dataset.pkl', 'wb') as f:
   pickle.dump(train_set, f, pickle.HIGHEST_PROTOCOL)
   pickle.dump(test_set, f, pickle.HIGHEST_PROTOCOL)
   pickle.dump(cate_list, f, pickle.HIGHEST_PROTOCOL)

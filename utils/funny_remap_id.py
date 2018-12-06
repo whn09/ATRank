@@ -103,7 +103,7 @@ def prepare_data(dir, cache_dir):
 
     tags, train_tags_list = get_tags(item_portraits)
 
-    item_features = np.zeros(shape=(num_items,))
+    item_features = np.zeros(shape=(num_items,), dtype=int)
     for content_id_index, content_id in index_content_id_map.items():
         if content_id in item_portraits:
             item_portrait = item_portraits[content_id]
@@ -130,7 +130,7 @@ def prepare_data(dir, cache_dir):
 
 if __name__ == '__main__':
     data = prepare_data(DIR, CACHE_DIR)
-    print('data:', data)
+    # print('data:', data)
 
     reviews_df = data['train']
     cate_list = data['item_features']

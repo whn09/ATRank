@@ -100,7 +100,7 @@ def train():
 
   # Loading data
   print('Loading data..')
-  with open('dataset.pkl', 'rb') as f:
+  with open('funny_dataset.pkl', 'rb') as f:
     train_set = pickle.load(f)
     test_set = pickle.load(f)
     cate_list = pickle.load(f)
