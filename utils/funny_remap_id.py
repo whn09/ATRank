@@ -69,7 +69,7 @@ def _build_pd(rows, cols, data):
         iids.append(iid)
         ratings.append(rating)
         timestamps.append(timestamp)
-    mat = pd.DataFrame([np.array(uids).reshape(-1, 1), np.array(iids).reshape(-1, 1), np.array(timestamps).reshape(-1, 1)], columns=['reviewerID', 'asin', 'unixReviewTime'])
+    mat = pd.DataFrame({'reviewerID': uids, 'asin': iids, 'unixReviewTime': timestamps})
     return mat
 
 
