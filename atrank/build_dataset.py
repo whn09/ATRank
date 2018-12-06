@@ -9,7 +9,7 @@ with open('../raw_data/funny_remap.pkl', 'rb') as f:
   cate_list = pickle.load(f)
   user_count, item_count, cate_count, example_count = pickle.load(f)
   print('reviews_df:', reviews_df.shape, reviews_df.head())
-  print('cate_list:', len(cate_list), cate_list)
+  print('cate_list:', len(cate_list))
   print('user_count, item_count, cate_count, example_count:', user_count, item_count, cate_count, example_count)
   # asin_key, cate_key, revi_key = pickle.load(f)
   # print('asin_key, cate_key, revi_key:', len(asin_key), len(cate_key), len(revi_key))
