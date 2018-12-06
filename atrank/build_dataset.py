@@ -35,6 +35,7 @@ for reviewerID, hist in reviews_df.groupby('reviewerID'):
     if cnt % 1000 == 0:
         print('cnt:', cnt, '/', user_count)
     cnt += 1
+    print('hist:', hist)
     pos_list = hist['asin'].tolist()
     # print('pos_list:', len(pos_list), pos_list[:5])
     tim_list = hist['unixReviewTime'].tolist()
@@ -69,7 +70,7 @@ print('test_set:', len(test_set), test_set[:5])
 random.shuffle(train_set)
 random.shuffle(test_set)
 
-assert len(test_set) == user_count
+# assert len(test_set) == user_count
 # assert(len(test_set) + len(train_set) // 2 == reviews_df.shape[0])
 
 with open('funny_dataset.pkl', 'wb') as f:
