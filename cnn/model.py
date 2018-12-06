@@ -8,8 +8,8 @@ class Model(object):
     self.config = config
 
     # Summary Writer
-    self.train_writer = tf.summary.FileWriter(config['model_dir'] + '/train')
-    self.eval_writer = tf.summary.FileWriter(config['model_dir'] + '/eval')
+    self.train_writer = tf.summary.FileWriter(str(config['model_dir']) + '/train')
+    self.eval_writer = tf.summary.FileWriter(str(config['model_dir']) + '/eval')
 
     # Building network
     self.init_placeholders()
@@ -220,7 +220,7 @@ class Model(object):
 
 
   def save(self, sess):
-    checkpoint_path = os.path.join(self.config['model_dir'], 'atrank')
+    checkpoint_path = os.path.join(str(self.config['model_dir']), 'atrank')
     saver = tf.train.Saver()
     save_path = saver.save(sess,
                            save_path=checkpoint_path,
