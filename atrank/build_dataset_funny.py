@@ -35,10 +35,10 @@ def proc_time_emb(hist_t, cur_t):
 def generate_dataset(df):
     dataset = []
     cnt = 0
-    user_df = df.groupby('reviewerID').copy()
+    user_df = df.groupby('reviewerID')
     for reviewerID, hist in user_df:
         if cnt % 1000 == 0:
-            print('cnt:', cnt, '/', user_df.shape[0])
+            print('cnt:', cnt)
         cnt += 1
         # print('hist:', hist)
         pos_list = hist[hist.rating == 2]['asin'].tolist()
