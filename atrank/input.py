@@ -85,4 +85,4 @@ class DataInputTest:
     return self.i, (u, i, j, hist_i, hist_t, sl)
 
   def next(self):  # for python2
-    self.__next__()
+    return self.__next__()
