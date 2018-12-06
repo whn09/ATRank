@@ -137,6 +137,8 @@ def train():
     model = create_model(sess, config, cate_list)
     print('Init finish.\tCost time: %.2fs' % (time.time()-start_time))
 
+    tf.summary.FileWriter(FLAGS.model_dir, sess.graph)
+
     # Eval init AUC
     print('Init AUC: %.4f' % _eval(sess, test_set, model))
 
