@@ -49,140 +49,140 @@ tf.app.flags.DEFINE_float('per_process_gpu_memory_fraction', 0.0, 'Gpu memory us
 
 FLAGS = tf.app.flags.FLAGS
 
+
 def create_model(sess, config, cate_list):
+    # print(json.dumps(config, indent=4))
+    print('config:', config)
+    model = Model(config, cate_list)
 
-  # print(json.dumps(config, indent=4))
-  print('config:', config)
-  model = Model(config, cate_list)
+    print('All global variables:')
+    for v in tf.global_variables():
+        if v not in tf.trainable_variables():
+            print('\t', v)
+        else:
+            print('\t', v, 'trainable')
 
-  print('All global variables:')
-  for v in tf.global_variables():
-    if v not in tf.trainable_variables():
-      print('\t', v)
+    ckpt = tf.train.get_checkpoint_state(FLAGS.model_dir)
+    if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
+        print('Reloading model parameters..')
+        model.restore(sess, ckpt.model_checkpoint_path)
     else:
-      print('\t', v, 'trainable')
+        if not os.path.exists(FLAGS.model_dir):
+            os.makedirs(FLAGS.model_dir)
+        print('Created new model parameters..')
+        sess.run(tf.global_variables_initializer())
+        sess.run(tf.local_variables_initializer())
 
-  ckpt = tf.train.get_checkpoint_state(FLAGS.model_dir)
-  if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
-    print('Reloading model parameters..')
-    model.restore(sess, ckpt.model_checkpoint_path)
-  else:
-    if not os.path.exists(FLAGS.model_dir):
-      os.makedirs(FLAGS.model_dir)
-    print('Created new model parameters..')
-    sess.run(tf.global_variables_initializer())
-    sess.run(tf.local_variables_initializer())
+    return model
 
-  return model
 
 def _eval(sess, test_set, model):
+    auc_sum = 0.0
+    for _, uij in DataInputTest(test_set, FLAGS.test_batch_size):
+        auc_sum += model.eval(sess, uij) * len(uij[0])
+    test_auc = auc_sum / len(test_set)
 
-  auc_sum = 0.0
-  for _, uij in DataInputTest(test_set, FLAGS.test_batch_size):
-    auc_sum += model.eval(sess, uij) * len(uij[0])
-  test_auc = auc_sum / len(test_set)
+    model.eval_writer.add_summary(
+        summary=tf.Summary(
+            value=[tf.Summary.Value(tag='Eval AUC', simple_value=test_auc)]),
+        global_step=model.global_step.eval())
 
-  model.eval_writer.add_summary(
-      summary=tf.Summary(
-          value=[tf.Summary.Value(tag='Eval AUC', simple_value=test_auc)]),
-      global_step=model.global_step.eval())
-
-  return test_auc
+    return test_auc
 
 
 def train():
-  start_time = time.time()
+    start_time = time.time()
 
-  if FLAGS.from_scratch:
-    if tf.gfile.Exists(FLAGS.model_dir):
-      tf.gfile.DeleteRecursively(FLAGS.model_dir)
-    tf.gfile.MakeDirs(FLAGS.model_dir)
+    if FLAGS.from_scratch:
+        if tf.gfile.Exists(FLAGS.model_dir):
+            tf.gfile.DeleteRecursively(FLAGS.model_dir)
+        tf.gfile.MakeDirs(FLAGS.model_dir)
 
-  # Loading data
-  print('Loading data..')
-  with open('funny_dataset.pkl', 'rb') as f:
-    train_set = pickle.load(f)
-    test_set = pickle.load(f)
-    cate_list = pickle.load(f)
-    user_count, item_count, cate_count = pickle.load(f)
-    print('train_set:', type(train_set))
-    print('test_set:', type(test_set))
-    print('cate_list:', len(cate_list))
-    print('user_count, item_count, cate_count:', user_count, item_count, cate_count)
+    # Loading data
+    print('Loading data..')
+    with open('funny_dataset.pkl', 'rb') as f:
+        train_set = pickle.load(f)
+        test_set = pickle.load(f)
+        cate_list = pickle.load(f)
+        user_count, item_count, cate_count = pickle.load(f)
+        print('train_set:', type(train_set))
+        print('test_set:', type(test_set))
+        print('cate_list:', len(cate_list))
+        print('user_count, item_count, cate_count:', user_count, item_count, cate_count)
 
-  # Config GPU options
-  if FLAGS.per_process_gpu_memory_fraction == 0.0:
-    gpu_options = tf.GPUOptions(allow_growth=True)
-  elif FLAGS.per_process_gpu_memory_fraction == 1.0:
-    gpu_options = tf.GPUOptions()
-  else:
-    gpu_options = tf.GPUOptions(
-        per_process_gpu_memory_fraction=FLAGS.per_process_gpu_memory_fraction)
+    # Config GPU options
+    if FLAGS.per_process_gpu_memory_fraction == 0.0:
+        gpu_options = tf.GPUOptions(allow_growth=True)
+    elif FLAGS.per_process_gpu_memory_fraction == 1.0:
+        gpu_options = tf.GPUOptions()
+    else:
+        gpu_options = tf.GPUOptions(
+            per_process_gpu_memory_fraction=FLAGS.per_process_gpu_memory_fraction)
 
-  os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.cuda_visible_devices
+    os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.cuda_visible_devices
 
-  # Build Config
-  config = OrderedDict(sorted(FLAGS.__flags.items()))
-  for k, v in config.items():  # for python2
-    config[k] = v.value
-  config['user_count'] = user_count
-  config['item_count'] = item_count
-  config['cate_count'] = cate_count
+    # Build Config
+    config = OrderedDict(sorted(FLAGS.__flags.items()))
+    for k, v in config.items():  # for python2
+        config[k] = v.value
+    config['user_count'] = user_count
+    config['item_count'] = item_count
+    config['cate_count'] = cate_count
 
+    # Initiate TF session
+    with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
-  # Initiate TF session
-  with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
+        # Create a new model or reload existing checkpoint
+        model = create_model(sess, config, cate_list)
+        print('Init finish.\tCost time: %.2fs' % (time.time() - start_time))
 
-    # Create a new model or reload existing checkpoint
-    model = create_model(sess, config, cate_list)
-    print('Init finish.\tCost time: %.2fs' % (time.time()-start_time))
+        tf.summary.FileWriter(FLAGS.model_dir, sess.graph)
 
-    tf.summary.FileWriter(FLAGS.model_dir, sess.graph)
+        # Eval init AUC
+        print('Init AUC: %.4f' % _eval(sess, test_set, model))
 
-    # Eval init AUC
-    print('Init AUC: %.4f' % _eval(sess, test_set, model))
+        # Start training
+        lr = FLAGS.learning_rate
+        epoch_size = round(len(train_set) / FLAGS.train_batch_size)
+        print('Training..\tmax_epochs: %d\tepoch_size: %d' %
+              (FLAGS.max_epochs, epoch_size))
 
-    # Start training
-    lr = FLAGS.learning_rate
-    epoch_size = round(len(train_set) / FLAGS.train_batch_size)
-    print('Training..\tmax_epochs: %d\tepoch_size: %d' %
-          (FLAGS.max_epochs, epoch_size))
+        start_time, avg_loss, best_auc = time.time(), 0.0, 0.0
+        for _ in range(FLAGS.max_epochs):
 
-    start_time, avg_loss, best_auc = time.time(), 0.0, 0.0
-    for _ in range(FLAGS.max_epochs):
+            random.shuffle(train_set)
 
-      random.shuffle(train_set)
+            for _, uij in DataInput(train_set, FLAGS.train_batch_size):
 
-      for _, uij in DataInput(train_set, FLAGS.train_batch_size):
+                add_summary = bool(model.global_step.eval() % FLAGS.display_freq == 0)
+                step_loss = model.train(sess, uij, lr, add_summary)
+                avg_loss += step_loss
 
-        add_summary = bool(model.global_step.eval() % FLAGS.display_freq == 0)
-        step_loss = model.train(sess, uij, lr, add_summary)
-        avg_loss += step_loss
+                if model.global_step.eval() % FLAGS.eval_freq == 0:
+                    test_auc = _eval(sess, test_set, model)
+                    print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_AUC: %.4f' %
+                          (model.global_epoch_step.eval(), model.global_step.eval(),
+                           avg_loss / FLAGS.eval_freq, test_auc))
+                    avg_loss = 0.0
 
-        if model.global_step.eval() % FLAGS.eval_freq == 0:
-          test_auc = _eval(sess, test_set, model)
-          print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_AUC: %.4f' %
-                (model.global_epoch_step.eval(), model.global_step.eval(),
-                 avg_loss / FLAGS.eval_freq, test_auc))
-          avg_loss = 0.0
+                    if test_auc > 0.88 and test_auc > best_auc:
+                        best_auc = test_auc
+                        model.save(sess)
 
-          if test_auc > 0.88 and test_auc > best_auc:
-            best_auc = test_auc
-            model.save(sess)
+                if model.global_step.eval() == 336000:
+                    lr = 0.1
 
-        if model.global_step.eval() == 336000:
-          lr = 0.1
-
-      print('Epoch %d DONE\tCost time: %.2f' %
-            (model.global_epoch_step.eval(), time.time()-start_time))
-      model.global_epoch_step_op.eval()
-    model.save(sess)
-    print('best test_auc:', best_auc)
-    print('Finished')
+            print('Epoch %d DONE\tCost time: %.2f' %
+                  (model.global_epoch_step.eval(), time.time() - start_time))
+            model.global_epoch_step_op.eval()
+        model.save(sess)
+        print('best test_auc:', best_auc)
+        print('Finished')
 
 
 def main(_):
-  train()
+    train()
+
 
 if __name__ == '__main__':
-  tf.app.run()
+    tf.app.run()

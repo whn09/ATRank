@@ -132,7 +132,7 @@ if __name__ == '__main__':
     data = prepare_data(DIR, CACHE_DIR)
     # print('data:', data)
 
-    reviews_df = data['train']
+    reviews_df = pd.concat([data['train'], data['test']], axis=0)
     cate_list = data['item_features']
     user_count = data['user_count']
     item_count = data['item_count']
