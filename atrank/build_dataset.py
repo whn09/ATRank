@@ -35,10 +35,10 @@ for reviewerID, hist in reviews_df.groupby('reviewerID'):
     if cnt % 1000 == 0:
         print('cnt:', cnt, '/', user_count)
     cnt += 1
-    print('hist:', hist)
+    # print('hist:', hist)
     pos_list = hist[hist.rating == 2]['asin'].tolist()
     neg_list = hist[hist.rating == 1]['asin'].tolist()
-    print('pos_list:', len(pos_list), pos_list[:5])
+    # print('pos_list:', len(pos_list), pos_list[:5])
     tim_list = hist['unixReviewTime'].tolist()
     # print('tim_list1:', len(tim_list), tim_list[:5])
     tim_list = [i // 3600 // 24 for i in tim_list]
@@ -52,11 +52,12 @@ for reviewerID, hist in reviews_df.groupby('reviewerID'):
     #
     #
     # neg_list = [gen_neg() for i in range(len(pos_list))]
-    print('neg_list:', len(neg_list), neg_list[:5])
+    # # print('neg_list:', len(neg_list), neg_list[:5])
 
     for i in range(1, len(pos_list)):
         hist_i = pos_list[:i]
         hist_t = proc_time_emb(tim_list[:i], tim_list[i])
+        print('hist_i:', hist_i, 'hist_t:', hist_t)
         if i != len(pos_list) - 1:
             train_set.append((reviewerID, hist_i, hist_t, pos_list[i], 1))
             train_set.append((reviewerID, hist_i, hist_t, neg_list[i], 0))
