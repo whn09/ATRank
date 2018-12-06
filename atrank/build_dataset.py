@@ -8,6 +8,9 @@ with open('../raw_data/remap.pkl', 'rb') as f:
   reviews_df = pickle.load(f)
   cate_list = pickle.load(f)
   user_count, item_count, cate_count, example_count = pickle.load(f)
+  print('reviews_df:', reviews_df.head())
+  print('cate_list:', cate_list)
+  print('user_count, item_count, cate_count, example_count:', user_count, item_count, cate_count, example_count)
 
 # [1, 2) = 0, [2, 4) = 1, [4, 8) = 2, [8, 16) = 3...  need len(gap) hot
 gap = np.array([2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096])
