@@ -36,23 +36,23 @@ for reviewerID, hist in reviews_df.groupby('reviewerID'):
         print('cnt:', cnt, '/', user_count)
     cnt += 1
     print('hist:', hist)
-    pos_list = hist['asin'].tolist()
-    # print('pos_list:', len(pos_list), pos_list[:5])
+    pos_list = hist[hist.rating == 2]['asin'].tolist()
+    neg_list = hist[hist.rating == 1]['asin'].tolist()
+    print('pos_list:', len(pos_list), pos_list[:5])
     tim_list = hist['unixReviewTime'].tolist()
     # print('tim_list1:', len(tim_list), tim_list[:5])
     tim_list = [i // 3600 // 24 for i in tim_list]
     # print('tim_list2:', len(tim_list), tim_list[:5])
 
-
-    def gen_neg():
-        neg = pos_list[0]
-        while neg in pos_list:
-            neg = random.randint(0, item_count - 1)
-        return neg
-
-
-    neg_list = [gen_neg() for i in range(len(pos_list))]
-    # print('neg_list:', len(neg_list), neg_list[:5])
+    # def gen_neg():
+    #     neg = pos_list[0]
+    #     while neg in pos_list:
+    #         neg = random.randint(0, item_count - 1)
+    #     return neg
+    #
+    #
+    # neg_list = [gen_neg() for i in range(len(pos_list))]
+    print('neg_list:', len(neg_list), neg_list[:5])
 
     for i in range(1, len(pos_list)):
         hist_i = pos_list[:i]
