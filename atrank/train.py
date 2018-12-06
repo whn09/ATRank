@@ -105,6 +105,10 @@ def train():
     test_set = pickle.load(f)
     cate_list = pickle.load(f)
     user_count, item_count, cate_count = pickle.load(f)
+    print('train_set:', type(train_set))
+    print('test_set:', type(test_set))
+    print('cate_list:', len(cate_list))
+    print('user_count, item_count, cate_count:', user_count, item_count, cate_count)
 
   # Config GPU options
   if FLAGS.per_process_gpu_memory_fraction == 0.0:
@@ -119,7 +123,7 @@ def train():
 
   # Build Config
   config = OrderedDict(sorted(FLAGS.__flags.items()))
-  for k, v in config.items():
+  for k, v in config.items():  # for python2?
     config[k] = v.value
   config['user_count'] = user_count
   config['item_count'] = item_count
