@@ -83,3 +83,6 @@ class DataInputTest:
       k += 1
 
     return self.i, (u, i, j, hist_i, hist_t, sl)
+
+  def next(self):  # for python2
+    self.__next__()
