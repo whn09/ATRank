@@ -69,7 +69,7 @@ def _build_pd(rows, cols, data):
         iids.append(iid)
         ratings.append(rating)
         timestamps.append(timestamp)
-    mat = pd.DataFrame({'reviewerID': uids, 'asin': iids, 'unixReviewTime': timestamps})
+    mat = pd.DataFrame({'reviewerID': uids, 'asin': iids, 'rating': ratings, 'unixReviewTime': timestamps})
     return mat
 
 
@@ -123,7 +123,7 @@ def prepare_data(dir, cache_dir):
             'user_count': num_users,
             'item_count': num_items,
             'cate_count': len(tags),
-            'example_count': train.shape[0]}
+            'example_count': train.shape[0]+test.shape[0]}
 
     return data
 

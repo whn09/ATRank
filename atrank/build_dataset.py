@@ -32,7 +32,7 @@ train_set = []
 test_set = []
 cnt = 0
 for reviewerID, hist in reviews_df.groupby('reviewerID'):
-    if cnt % 1000:
+    if cnt % 1000 == 0:
         print('cnt:', cnt, '/', user_count)
     cnt += 1
     pos_list = hist['asin'].tolist()
