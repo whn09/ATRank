@@ -108,7 +108,7 @@ def prepare_data(dir, cache_dir):
         if content_id in item_portraits:
             item_portrait = item_portraits[content_id]
             tag_portrait = item_portrait['tag_portrait']
-            item_features[content_id_index] = tags[tag_portrait.keys()[0]]+1  # incre 1
+            item_features[content_id_index] = tags[list(tag_portrait.keys())[0]]+1  # incre 1
             # item_features[content_id_index] = []
             # for tag, tscore in tag_portrait.items():
             #     item_features[content_id_index].append(str(tags[tag]) + ':' + str(tscore))
