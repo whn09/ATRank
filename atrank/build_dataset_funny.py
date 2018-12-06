@@ -35,7 +35,7 @@ def proc_time_emb(hist_t, cur_t):
 def generate_dataset(df):
     dataset = []
     cnt = 0
-    user_df = df.groupby('reviewerID').apply()
+    user_df = df.groupby('reviewerID').copy()
     for reviewerID, hist in user_df:
         if cnt % 1000 == 0:
             print('cnt:', cnt, '/', user_df.shape[0])
