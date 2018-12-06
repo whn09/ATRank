@@ -50,19 +50,17 @@ def generate_dataset(df):
         tim_list = [i // 3600 // 24 for i in tim_list]
         # print('tim_list2:', len(tim_list), tim_list[:5])
 
-        for i in range(1, len(pos_list)):
+        for i in range(1, len(pos_list)+1):
             hist_i = pos_list[:i]
             hist_t = proc_time_emb(tim_list[:i], tim_list[i])
             # print('hist_i:', hist_i, 'hist_t:', hist_t)
-            if i != len(pos_list) - 1:
-                dataset.append((reviewerID, hist_i, hist_t, pos_list[i], 1))
+            dataset.append((reviewerID, hist_i, hist_t, pos_list[i], 1))
 
-        for i in range(1, len(neg_list)):
+        for i in range(1, len(neg_list)+1):
             hist_i = neg_list[:i]
             hist_t = proc_time_emb(tim_list[:i], tim_list[i])
             # print('hist_i:', hist_i, 'hist_t:', hist_t)
-            if i != len(neg_list) - 1:
-                dataset.append((reviewerID, hist_i, hist_t, neg_list[i], 0))
+            dataset.append((reviewerID, hist_i, hist_t, neg_list[i], 0))
     return dataset
 
 
