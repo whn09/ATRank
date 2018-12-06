@@ -132,7 +132,9 @@ if __name__ == '__main__':
     data = prepare_data(DIR, CACHE_DIR)
     # print('data:', data)
 
-    reviews_df = pd.concat([data['train'], data['test']], axis=0)
+    # reviews_df = pd.concat([data['train'], data['test']], axis=0)
+    train_reviews_df = data['train']
+    test_reviews_df = data['test']
     cate_list = data['item_features']
     user_count = data['user_count']
     item_count = data['item_count']
@@ -140,7 +142,9 @@ if __name__ == '__main__':
     example_count = data['example_count']
 
     with open('../raw_data/funny_remap.pkl', 'wb') as f:
-        pickle.dump(reviews_df, f, pickle.HIGHEST_PROTOCOL) # uid, iid
+        # pickle.dump(reviews_df, f, pickle.HIGHEST_PROTOCOL) # uid, iid
+        pickle.dump(train_reviews_df, f, pickle.HIGHEST_PROTOCOL) # uid, iid
+        pickle.dump(test_reviews_df, f, pickle.HIGHEST_PROTOCOL) # uid, iid
         pickle.dump(cate_list, f, pickle.HIGHEST_PROTOCOL) # cid of iid line
         pickle.dump((user_count, item_count, cate_count, example_count), f, pickle.HIGHEST_PROTOCOL)
         # pickle.dump((asin_key, cate_key, revi_key), f, pickle.HIGHEST_PROTOCOL)
