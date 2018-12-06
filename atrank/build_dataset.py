@@ -47,8 +47,8 @@ def generate_dataset(df):
         # print('hist:', hist)
         pos_list = hist[hist.rating == 2]['asin'].tolist()
         neg_list = hist[hist.rating == 1]['asin'].tolist()
-        # print('pos_list:', len(pos_list), pos_list[:5])
-        # print('neg_list:', len(neg_list), neg_list[:5])
+        print('pos_list:', len(pos_list), pos_list[:5])
+        print('neg_list:', len(neg_list), neg_list[:5])
         tim_list = hist['unixReviewTime'].tolist()
         # print('tim_list1:', len(tim_list), tim_list[:5])
         tim_list = [i // 3600 // 24 for i in tim_list]
